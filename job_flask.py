@@ -1,5 +1,6 @@
-from flask import Flask, request, jsonify
-from openai import OpenAI
+from quart import Quart, request, jsonify
+from quart_cors import cors
+from openai import AsyncOpenAI
 import os
 from dotenv import load_dotenv
 import json
@@ -7,11 +8,12 @@ import json
 # Load environment variables from a .env file if available
 load_dotenv()
 
-# Initialize Flask app
-app = Flask(__name__)
+# Initialize Quart app
+app = Quart(__name__)
+app = cors(app, allow_origin="*")
 
 # Configure OpenAI API key
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+client = AsyncOpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 # Prompt template
 job_description_template = """
@@ -70,7 +72,7 @@ Create a job description for the position of {input}.
 """
 
 @app.route('/generate-job-description', methods=['GET'])
-def generate_job_description():
+async def generate_job_description():
     try:
         # Get the job title from query parameters
         job_title = request.args.get('job_title')
@@ -82,15 +84,15 @@ def generate_job_description():
         prompt = job_description_template.format(input=job_title)
 
         # Call OpenAI API for completion
-        response = client.chat.completions.create(
+        response = await client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "You are an expert HR professional. Respond with a JSON object in the specified format."},
                 {"role": "user", "content": prompt}
             ],
             response_format={"type": "json_object"},
-            max_tokens=1500,
-            temperature=0.1
+            max_tokens=2000,
+            temperature=0.0
         )
 
         # Extract the generated JSON from the response
@@ -103,4 +105,4 @@ def generate_job_description():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,use_reloader=False)
