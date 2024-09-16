@@ -18,7 +18,7 @@ client = AsyncOpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 # Prompt template
 job_description_template = """
 You are an expert HR professional tasked with creating key components of job descriptions. When given a job title, generate the following five sections in a specific JSON format:
-1. Job Description: 
+1. Job Description:
 A concise paragraph (2-4 sentences) that summarizes the role, its importance to the organization, and the primary objective of the position.
 2. Qualifications:
 List 4-6 key qualifications for the role, including:
@@ -62,11 +62,11 @@ Respond with a JSON object in the following format:
     "string",
     ...
   ],
-  "Key Responsibilities": {{
-    "Responsibility Title 1": "Description 1",
-    "Responsibility Title 2": "Description 2",
+  "Key Responsibilities": [
+    "string",
+    "string",
     ...
-  }}
+  ]
 }}
 Create a job description for the position of {input}.
 """
