@@ -4,6 +4,7 @@ from openai import AsyncOpenAI
 import os
 from dotenv import load_dotenv
 import json
+import asyncio
 
 # Load environment variables from a .env file if available
 load_dotenv()
@@ -91,7 +92,7 @@ async def generate_job_description():
                 {"role": "user", "content": prompt}
             ],
             response_format={"type": "json_object"},
-            max_tokens=2000,
+            max_tokens=1000,
             temperature=0.0
         )
 
@@ -105,4 +106,4 @@ async def generate_job_description():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True,use_reloader=False)
+    asyncio.run(app.run_task(debug=True))
